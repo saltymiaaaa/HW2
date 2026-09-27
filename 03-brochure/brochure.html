@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exit Check Brochure</title>
+<style>
+  :root {
+    --paper: #f6f4ef;
+    --card: #ffffff;
+    --ink: #16181c;
+    --ink-soft: #3d4148;
+    --muted: #6b7078;
+    --line: #e4e0d7;
+    --exit: #0b7a4b;
+    --sticky: #a9620b;
+    --trapped: #a32232;
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #d9d5cc;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 10.5pt;
+    line-height: 1.5;
+  }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    overflow: hidden;
+    margin: 12mm auto;
+    padding: 16mm 15mm 14mm;
+    background: var(--paper);
+    box-shadow: 0 10px 40px -18px rgba(0,0,0,.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.015em; margin: 0; line-height: 1.15; }
+  h1 { font-size: 30pt; }
+  h2 { font-size: 15pt; margin-bottom: 6pt; }
+  h3 { font-size: 11pt; margin-bottom: 3pt; }
+  p { margin: 0 0 8pt; }
+
+  .rule { height: 2px; background: var(--ink); margin: 0 0 8mm; }
+  .rule-thin { height: 1px; background: var(--line); margin: 5mm 0; }
+
+  .brandbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4mm; }
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .brand-name { font-family: var(--serif); font-size: 13pt; font-weight: 600; }
+  .brand-tag { font-size: 7.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+  .kicker { font-size: 8pt; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 4mm; }
+
+  .lede { font-family: var(--serif); font-size: 13.5pt; line-height: 1.35; color: var(--ink-soft); }
+
+  .sentence {
+    font-family: var(--serif);
+    font-size: 14pt;
+    line-height: 1.35;
+    border-left: 3px solid var(--exit);
+    padding-left: 5mm;
+    margin: 6mm 0;
+  }
+  .sentence.warn { border-left-color: var(--sticky); }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 3mm;
+    padding: 5mm;
+  }
+
+  .steps { counter-reset: s; display: grid; gap: 4mm; }
+  .step { display: grid; grid-template-columns: 8mm 1fr; gap: 3mm; }
+  .step .n {
+    counter-increment: s;
+    font-family: var(--mono);
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--exit);
+    border: 1.5px solid var(--exit);
+    border-radius: 99px;
+    width: 7mm; height: 7mm;
+    display: grid; place-items: center;
+  }
+  .step .n::before { content: counter(s); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; margin: 5mm 0; }
+  .stat .v { font-family: var(--mono); font-size: 19pt; font-weight: 600; letter-spacing: -.03em; display: block; }
+  .stat .l { font-size: 8pt; color: var(--muted); line-height: 1.3; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  th, td { text-align: left; padding: 2.2mm 2mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  td.num, th.num { text-align: right; font-family: var(--mono); }
+
+  .pill { display: inline-block; padding: 1px 7px; border-radius: 99px; font-size: 7.5pt; font-weight: 700; }
+  .pill.g { background: #e7f2ec; color: var(--exit); }
+  .pill.a { background: #f8eede; color: var(--sticky); }
+  .pill.r { background: #f8e6e8; color: var(--trapped); }
+
+  ul { margin: 0 0 8pt; padding-left: 5mm; }
+  li { margin-bottom: 2.5pt; }
+
+  .shot { width: 100%; border: 1px solid var(--line); border-radius: 2mm; display: block; }
+  .caption { font-size: 8pt; color: var(--muted); margin-top: 2mm; }
+
+  .foot {
+    margin-top: auto;
+    padding-top: 6mm;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: var(--muted);
+  }
+
+  .mono { font-family: var(--mono); }
+  .muted { color: var(--muted); }
+  .big-quote { font-family: var(--serif); font-size: 13pt; line-height: 1.32; }
+
+  @page { size: A4; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================== PAGE 1 ============================== -->
+<section class="page">
+  <div class="brandbar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="7.5" stroke="#16181c" stroke-width="1.8" stroke-dasharray="34 12" stroke-dashoffset="-38" opacity=".45"/>
+        <path d="M11 16.6 14.6 20.2 22 12" stroke="#0b7a4b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Exit Check</span>
+    </div>
+    <span class="brand-tag">Know the cost of leaving</span>
+  </div>
+  <div class="rule"></div>
+
+  <p class="kicker">A product study, Part 2</p>
+  <h1>The cost of leaving a service stays unknown until the day you need to leave.</h1>
+  <p class="lede" style="margin-top:5mm">
+    Which is also the day you have the least time to deal with it. Exit Check answers the question
+    in advance, and keeps answering it every week.
+  </p>
+
+  <p class="sentence warn">
+    Leaving Notion today would take about 34 hours and no direct spend, and you would leave behind
+    databases, database relations, comments, sharing and permissions and page history.
+  </p>
+
+  <p class="muted" style="font-size:9pt">
+    That sentence is the entire product. Everything else exists to make it true.
+  </p>
+
+  <div class="rule-thin"></div>
+
+  <div class="cols">
+    <div>
+      <h2>The problem is not backup</h2>
+      <p>
+        Most people already have a copy of something. What they do not have is an answer. A folder
+        of downloaded archives says nothing about whether the files open, whether anything is
+        missing, or how many days of work sit between them and being operational somewhere else.
+      </p>
+      <p>
+        Three things go wrong quietly. Exports run once and never again. Exports download and never
+        get opened, so a truncated archive looks identical to a complete one. And exports leave
+        things behind on purpose, because comments, version history, permissions and relations are
+        usually not in any export format at all.
+      </p>
+      <p>
+        None of that is visible until the price changes, the free tier shrinks, the company is
+        acquired, or the feature you organised your work around is removed.
+      </p>
+    </div>
+    <div>
+      <h2>What Exit Check does</h2>
+      <div class="steps">
+        <div class="step"><span class="n"></span><div>
+          <h3>Runs the platform&rsquo;s own export, on a schedule</h3>
+          <p class="muted" style="font-size:9pt;margin:0">No new way out is invented. The published export is used, every day, week or month, without anyone remembering to.</p>
+        </div></div>
+        <div class="step"><span class="n"></span><div>
+          <h3>Writes the copy where you control it</h3>
+          <p class="muted" style="font-size:9pt;margin:0">Your disk, your storage, your machine. Exit Check never holds the only copy. Replacing one dependency with another is not an exit.</p>
+        </div></div>
+        <div class="step"><span class="n"></span><div>
+          <h3>Opens it, and says what is missing</h3>
+          <p class="muted" style="font-size:9pt;margin:0">Every structured file is parsed. Images are checked against their real bytes. Then the copy is compared with the platform, item type by item type.</p>
+        </div></div>
+        <div class="step"><span class="n"></span><div>
+          <h3>Answers one question, in one sentence</h3>
+          <p class="muted" style="font-size:9pt;margin:0">How many hours, how much money, and exactly what would be left behind.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-thin"></div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <span class="v">154 h</span>
+      <span class="l">of work to be running elsewhere, across one ordinary six service portfolio</span>
+    </div>
+    <div class="stat">
+      <span class="v">390,834</span>
+      <span class="l">items that would not come with you, of 573,461 held</span>
+    </div>
+    <div class="stat">
+      <span class="v">$53.98</span>
+      <span class="l">paid every month to keep that arrangement in place</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Exit Check &middot; product study brochure</span>
+    <span>Page 1 of 4</span>
+  </div>
+</section>
+
+<!-- ============================== PAGE 2 ============================== -->
+<section class="page">
+  <div class="brandbar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="7.5" stroke="#16181c" stroke-width="1.8" stroke-dasharray="34 12" stroke-dashoffset="-38" opacity=".45"/>
+        <path d="M11 16.6 14.6 20.2 22 12" stroke="#0b7a4b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Exit Check</span>
+    </div>
+    <span class="brand-tag">Know the cost of leaving</span>
+  </div>
+  <div class="rule"></div>
+
+  <h2>Exit cost, and why it is arithmetic</h2>
+  <p>
+    Every platform gets a score from 0 to 100. Six factors, each weighted, each read from a field
+    you can inspect. No model is involved anywhere in the product, because a number you cannot
+    argue with is a number you cannot trust.
+  </p>
+
+  <table style="margin-bottom:5mm">
+    <thead>
+      <tr><th>Factor</th><th class="num">Weight</th><th>Read from</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>What the export leaves behind</td><td class="num">0.32</td><td class="muted">coverage per item type, and the measured share that survives</td></tr>
+      <tr><td>Cost of being running somewhere else</td><td class="num">0.20</td><td class="muted">hours and spend to be operational elsewhere</td></tr>
+      <tr><td>Whether another tool can open it</td><td class="num">0.14</td><td class="muted">share of exported bytes in open formats</td></tr>
+      <tr><td>How fast the price moves under you</td><td class="num">0.14</td><td class="muted">compound annual growth of the price you pay</td></tr>
+      <tr><td>Work required to get the export</td><td class="num">0.10</td><td class="muted">API, manual action, emailed request, or none</td></tr>
+      <tr><td>What happens after you stop paying</td><td class="num">0.10</td><td class="muted">read only, grace period, or deletion</td></tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:9pt" class="muted">
+    One rule overrides the arithmetic. If more than a quarter of what you hold cannot be exported at
+    all, the service counts as trapped whatever the weighted score says, because moving quickly does
+    not help with data that never comes out.
+  </p>
+
+  <div class="rule-thin"></div>
+
+  <div class="cols">
+    <div>
+      <h2>One portfolio, scored</h2>
+      <table>
+        <thead><tr><th>Service</th><th class="num">Score</th><th>Band</th></tr></thead>
+        <tbody>
+          <tr><td>Notion</td><td class="num">64</td><td><span class="pill r">Trapped</span></td></tr>
+          <tr><td>Evernote</td><td class="num">54</td><td><span class="pill r">Trapped</span></td></tr>
+          <tr><td>Slack, free plan</td><td class="num">53</td><td><span class="pill r">Trapped</span></td></tr>
+          <tr><td>Figma</td><td class="num">46</td><td><span class="pill a">Sticky</span></td></tr>
+          <tr><td>Google Photos</td><td class="num">28</td><td><span class="pill g">Portable</span></td></tr>
+          <tr><td>GitHub</td><td class="num">26</td><td><span class="pill g">Portable</span></td></tr>
+        </tbody>
+      </table>
+      <p class="caption">
+        Slack scores 53 on the weighted factors and is still trapped: 94 percent of six years of
+        messages cannot be exported on the free plan at all.
+      </p>
+    </div>
+
+    <div>
+      <h2>What a real check finds</h2>
+      <p style="font-size:9pt">
+        Run against a sample export containing faults observed in genuine archives:
+      </p>
+      <div class="card" style="font-size:9pt">
+        <p style="margin-bottom:4pt"><strong>4 files listed but not readable</strong><br>
+        <span class="muted">A settings file with a trailing comma. A CSV whose rows stopped matching the header. An ENEX cut off mid element.</span></p>
+        <p style="margin-bottom:4pt"><strong>A photo that is not a photo</strong><br>
+        <span class="muted">Named .jpg, and the first bytes are an HTML error page the export server returned.</span></p>
+        <p style="margin-bottom:4pt"><strong>A zero byte attachment</strong><br>
+        <span class="muted">It passes a file count and holds nothing.</span></p>
+        <p style="margin-bottom:0"><strong>Dates stranded in sidecar files</strong><br>
+        <span class="muted">Present in the archive, ignored by every importer, and therefore lost in practice.</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Exit Check &middot; how the score is built</span>
+    <span>Page 2 of 4</span>
+  </div>
+</section>
+
+<!-- ============================== PAGE 3 ============================== -->
+<section class="page">
+  <div class="brandbar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="7.5" stroke="#16181c" stroke-width="1.8" stroke-dasharray="34 12" stroke-dashoffset="-38" opacity=".45"/>
+        <path d="M11 16.6 14.6 20.2 22 12" stroke="#0b7a4b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Exit Check</span>
+    </div>
+    <span class="brand-tag">Know the cost of leaving</span>
+  </div>
+  <div class="rule"></div>
+
+  <h2>See it working</h2>
+  <p style="font-size:9.5pt" class="muted">
+    A working prototype exists. It runs as a single application with no database and no keys, and
+    the archive checker is not a mock: drop a genuine export into it and it parses what is inside.
+  </p>
+
+  <div class="cols" style="margin:5mm 0">
+    <div>
+      <img class="shot" src="assets/landing.png" alt="The Exit Check landing page" />
+      <p class="caption">The front door. What it is, what it produces, and a three step walkthrough for a first visit.</p>
+    </div>
+    <div>
+      <img class="shot" src="assets/verify.png" alt="The export checker, which reads an archive inside the browser" />
+      <p class="caption">The checker. The archive is read in the browser and never uploaded, so only names, sizes and parse results reach the server.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin"></div>
+
+  <h2 style="margin-bottom:3mm">And it is tested</h2>
+  <div class="cols" style="margin-bottom:5mm">
+    <div class="card">
+      <p style="margin:0 0 3pt"><strong>81 end to end checks, across 12 user journeys</strong></p>
+      <p class="muted" style="font-size:9pt;margin:0">
+        A first visit, running a check and watching it stream, changing a schedule, checking a real
+        archive, feeding the endpoint rubbish, adding and removing a service, printing the report, a
+        week of unattended scheduled runs, broken links, the scoring model on its own, and archive
+        shapes the checker has never seen. All 81 pass.
+      </p>
+    </div>
+    <div class="card">
+      <p style="margin:0 0 3pt"><strong>21 stress cases, all inside budget</strong></p>
+      <p class="muted" style="font-size:9pt;margin:0">
+        A 120,000 file manifest scores in 0.6 s. A real 12,000 file zip opens and parses in 1.1 s. A
+        file that is not a zip is refused in 1 ms. 200 concurrent report requests in 2.0 s, and 12
+        people watching a check run at once all finish. Unicode paths, 4,000 character paths, 500
+        nested archives and an archive of nothing but empty files are each handled rather than
+        crashed on.
+      </p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Exit Check &middot; the prototype, and what it is tested against</span>
+    <span>Page 3 of 4</span>
+  </div>
+</section>
+
+<!-- ============================== PAGE 4 ============================== -->
+<section class="page">
+  <div class="brandbar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="7.5" stroke="#16181c" stroke-width="1.8" stroke-dasharray="34 12" stroke-dashoffset="-38" opacity=".45"/>
+        <path d="M11 16.6 14.6 20.2 22 12" stroke="#0b7a4b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Exit Check</span>
+    </div>
+    <span class="brand-tag">Know the cost of leaving</span>
+  </div>
+  <div class="rule"></div>
+
+  <h2 style="margin-bottom:5mm">Where it fits</h2>
+
+  <div class="cols-3">
+    <div>
+      <h3>Who it is for</h3>
+      <p style="font-size:9pt" class="muted">
+        Individuals and small teams with years of work inside subscription tools. The same people
+        who switch note apps after a price rise, and discover the cost afterwards.
+      </p>
+    </div>
+    <div>
+      <h3>What it is not</h3>
+      <ul style="font-size:9pt" class="muted">
+        <li>Not a model</li>
+        <li>Not a migration tool</li>
+        <li>Not another place your data lives</li>
+        <li>Not a dashboard to visit</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What it costs</h3>
+      <p style="font-size:9pt" class="muted">
+        $6 a month, fixed for three years, then capped at ten percent a year. Cancelling leaves your
+        copies where they already are, on your own storage, because they were never held here.
+      </p>
+    </div>
+  </div>
+
+  <div class="rule-thin"></div>
+
+  <div class="cols" style="align-items:center; margin-top:2mm">
+    <div>
+      <p class="big-quote">
+        Every service in that portfolio is trusted with something irreplaceable, and not one of
+        them publishes what leaving would cost. That number should not be a surprise.
+      </p>
+    </div>
+    <div>
+      <img class="shot" src="assets/service.png" alt="One service, with its six scoring factors and item by item inventory" style="max-height:52mm; object-fit:cover; object-position:top" />
+      <p class="caption">One platform in full. Every factor shows the sentence it was read from, and the inventory names what stays behind.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin"></div>
+
+  <h2 style="margin-bottom:1.5mm">Try it in three minutes</h2>
+  <p class="muted" style="font-size:9pt">
+    Nothing to install beyond the dependencies, nothing to sign into, no keys.
+  </p>
+
+  <div class="steps" style="margin:3mm 0 4mm; gap:3mm">
+    <div class="step"><span class="n"></span><div>
+      <h3>Look at a portfolio</h3>
+      <p class="muted" style="font-size:9pt;margin:0">Six platforms, each with a score and a sentence. Green means you could walk out this week. Red means some of it is never coming back.</p>
+    </div></div>
+    <div class="step"><span class="n"></span><div>
+      <h3>Open one, and run a check</h3>
+      <p class="muted" style="font-size:9pt;margin:0">The run streams live, step by step, and finishes by naming what the export leaves behind.</p>
+    </div></div>
+    <div class="step"><span class="n"></span><div>
+      <h3>Check a real archive</h3>
+      <p class="muted" style="font-size:9pt;margin:0">This part is not a demo. Drop in a genuine export, or press the button that builds a deliberately flawed sample in your browser.</p>
+    </div></div>
+  </div>
+
+  <div class="card" style="font-size:9pt">
+    <p style="margin:0 0 2pt"><strong>Run it</strong></p>
+    <p class="mono" style="margin:0 0 6pt">cd 02-prototype &amp;&amp; npm install &amp;&amp; npm run dev</p>
+    <p style="margin:0 0 2pt"><strong>Test it</strong></p>
+    <p class="mono" style="margin:0 0 6pt">npm run build &amp;&amp; npm start -- -p 3400 &nbsp;then&nbsp; npm run test:e2e &nbsp;and&nbsp; npm run test:stress</p>
+    <p style="margin:0 0 2pt"><strong>Deploy it</strong></p>
+    <p class="mono" style="margin:0">npx vercel &nbsp;(one project, no database, no keys)</p>
+  </div>
+
+  <div class="foot">
+    <span>The working prototype runs with <span class="mono">npm install &amp;&amp; npm run dev</span></span>
+    <span>Page 4 of 4</span>
+  </div>
+</section>
+
+</body>
+</html>
