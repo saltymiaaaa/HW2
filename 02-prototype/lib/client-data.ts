@@ -12,7 +12,13 @@ import type { Inspection, Manifest, Service } from "./types";
  * manifest is inspected locally instead of being posted to /api/verify.
  */
 
-export const STATIC_MODE = process.env.NEXT_PUBLIC_STATIC === "1";
+/**
+ * True when running as the static GitHub Pages build. Detected at runtime from
+ * the hostname, because build-time env inlining proved unreliable here.
+ */
+export const STATIC_MODE: boolean =
+  process.env.NEXT_PUBLIC_STATIC === "1" ||
+  (typeof window !== "undefined" && window.location.hostname.endsWith(".github.io"));
 
 export type ServiceRow = { service: Service; cost: ReturnType<typeof exitCost> };
 

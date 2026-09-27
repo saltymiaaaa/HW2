@@ -4,37 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import ScoreRing from "@/components/score-ring";
 import { useI18n } from "@/components/i18n";
+import { loadServices, loadReport, type ReportPayload, type ServiceRow } from "@/lib/client-data";
 import { VERDICT_SHORT, formatNumber, relativeTime, scheduleLabel } from "@/lib/format";
-import type { ExitCost, Service } from "@/lib/types";
-
-type Row = { service: Service; cost: ExitCost };
-type Report = {
-  headline: string;
-  summary: {
-    hours: number;
-    usd: number;
-    monthly: number;
-    strandedItems: number;
-    totalItems: number;
-    failing: string[];
-    unverified: string[];
-    averageScore: number;
-  };
-  events: { at: string; text: string }[];
-};
 
 export default function Dashboard() {
   const { t } = useI18n();
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [report, setReport] = useState<Report | null>(null);
+  const [rows, setRows] = useState<ServiceRow[] | null>(null);
+  const [report, setReport] = useState<ReportPayload | null>(null);
 
   useEffect(() => {
-    fetch("/api/services")
-      .then((r) => r.json())
-      .then((d) => setRows(d.services));
-    fetch("/api/report")
-      .then((r) => r.json())
-      .then(setReport);
+    loadServices().then(setRows);
+    loadReport().then(setReport);
   }, []);
 
   const worstBand = report && report.summary.failing.length > 0 ? "trapped" : "sticky";

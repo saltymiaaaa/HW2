@@ -3,51 +3,15 @@
 import { useEffect, useState } from "react";
 import ScoreRing from "@/components/score-ring";
 import { useI18n } from "@/components/i18n";
+import { loadReport, type ReportPayload } from "@/lib/client-data";
 import { VERDICT_SHORT, formatDate, formatNumber } from "@/lib/format";
-import type { ExitCost, Factor, Verdict } from "@/lib/types";
-
-type ReportService = {
-  id: string;
-  name: string;
-  category: string;
-  score: number;
-  band: ExitCost["band"];
-  sentence: string;
-  hours: number;
-  usd: number;
-  lostTypes: string[];
-  lastChecked: string | null;
-  verdict: Verdict;
-  bandReason?: string;
-  factors: Factor[];
-};
-
-type Report = {
-  generatedAt: string;
-  headline: string;
-  summary: {
-    count: number;
-    hours: number;
-    usd: number;
-    monthly: number;
-    averageScore: number;
-    totalItems: number;
-    strandedItems: number;
-    failing: string[];
-    unverified: string[];
-    worst: { name: string; score: number; sentence: string } | null;
-  };
-  services: ReportService[];
-};
 
 export default function ReportPage() {
   const { t } = useI18n();
-  const [report, setReport] = useState<Report | null>(null);
+  const [report, setReport] = useState<ReportPayload | null>(null);
 
   useEffect(() => {
-    fetch("/api/report")
-      .then((r) => r.json())
-      .then(setReport);
+    loadReport().then(setReport);
   }, []);
 
   if (!report) return <p className="muted">{t.report.loading}</p>;

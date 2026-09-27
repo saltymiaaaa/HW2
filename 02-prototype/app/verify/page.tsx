@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useI18n } from "@/components/i18n";
 import { buildSampleExport } from "@/lib/sample-export";
 import { readArchive } from "@/lib/read-archive";
+import { verifyManifest } from "@/lib/client-data";
 import { formatBytes, formatNumber } from "@/lib/format";
 import type { Inspection, Manifest } from "@/lib/types";
 
@@ -35,14 +36,8 @@ export default function VerifyPage() {
       setManifest(read);
       setProgress({ fraction: 1, label: "" });
 
-      const response = await fetch("/api/verify", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(read),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error ?? "The check failed.");
-      setInspection(data.inspection as Inspection);
+      const inspection = await verifyManifest(read);
+      setInspection(inspection);
     } catch (e) {
       setError((e as Error).message);
     } finally {
