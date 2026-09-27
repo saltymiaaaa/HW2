@@ -6,17 +6,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import RunStream from "@/components/run-stream";
 import ScoreRing from "@/components/score-ring";
 import Sparkline from "@/components/sparkline";
+import { useI18n } from "@/components/i18n";
 import { VERDICT_LABEL, formatBytes, formatDate, formatNumber, relativeTime } from "@/lib/format";
-import { bandLabel, survives } from "@/lib/score";
+import { survives } from "@/lib/score";
 import type { ExitCost, Schedule, Service } from "@/lib/types";
 
 const COVERAGE_BADGE = {
-  full: { className: "portable", label: "Comes out in full" },
-  partial: { className: "sticky", label: "Comes out reduced" },
-  none: { className: "trapped", label: "Stays behind" },
+  full: "portable",
+  partial: "sticky",
+  none: "trapped",
 } as const;
 
 export default function ServicePage() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [data, setData] = useState<{ service: Service; cost: ExitCost } | null>(null);
@@ -26,10 +28,10 @@ export default function ServicePage() {
 
   const load = useCallback(() => {
     fetch(`/api/services/${id}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("No such service."))))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(t.service.notFound))))
       .then(setData)
       .catch((e: Error) => setError(e.message));
-  }, [id]);
+  }, [id, t]);
 
   useEffect(load, [load]);
 
@@ -47,24 +49,24 @@ export default function ServicePage() {
       <>
         <h1>{error}</h1>
         <p>
-          <Link href="/portfolio">Back to the portfolio</Link>
+          <Link href="/portfolio">{t.service.back}</Link>
         </p>
       </>
     );
   }
 
-  if (!data) return <p className="muted">Loading.</p>;
+  if (!data) return <p className="muted">{t.service.loading}</p>;
 
   const { service, cost } = data;
   const last = service.snapshots[0];
-  const totalItems = service.itemTypes.reduce((n, t) => n + t.count, 0);
-  const strandedItems = service.itemTypes.reduce((n, t) => n + t.count * (1 - survives(t)), 0);
+  const totalItems = service.itemTypes.reduce((n, t2) => n + t2.count, 0);
+  const strandedItems = service.itemTypes.reduce((n, t2) => n + t2.count * (1 - survives(t2)), 0);
 
   return (
     <>
       <p className="eyebrow">
         <Link href="/portfolio" style={{ textDecoration: "none" }}>
-          Portfolio
+          {t.nav.portfolio}
         </Link>{" "}
         / {service.category}
       </p>
@@ -73,20 +75,17 @@ export default function ServicePage() {
         <div>
           <h1 style={{ marginBottom: 6 }}>{service.name}</h1>
           <p className="muted" style={{ margin: 0 }}>
-            {service.vendor} · {service.plan} · ${service.monthlyUsd.toFixed(2)} a month ·{" "}
-            {service.yearsStored} years of your data
+            {service.vendor} · {service.plan} · ${service.monthlyUsd.toFixed(2)}/mo ·{" "}
+            {service.yearsStored} yrs
           </p>
         </div>
-        <ScoreRing score={cost.score} band={cost.band} size={100} label={`${bandLabel(cost.band)}`} />
+        <ScoreRing score={cost.score} band={cost.band} size={100} label={t.bands[cost.band]} />
       </div>
 
       <div className="intro">
         <div>
-          <strong>What you are looking at.</strong> One platform in full. The sentence below is the
-          product&rsquo;s entire output. Under it, the six factors that produced the score, each
-          shown with the evidence it was read from, and then every item type you hold with whether
-          it survives the export. Press <strong>Check this service now</strong> to watch a run
-          happen step by step.
+          <strong>{t.service.introStrong}</strong>
+          {t.service.introBody}
         </div>
       </div>
 
@@ -96,7 +95,8 @@ export default function ServicePage() {
         </p>
         {cost.bandReason ? (
           <p className="note" style={{ marginBottom: 18 }}>
-            Scored {cost.score}, and still counted as trapped. {cost.bandReason}
+            {t.service.bandReasonA} {cost.score}
+            {t.service.bandReasonB} {cost.bandReason}
           </p>
         ) : null}
         <div className="row no-print">
@@ -108,22 +108,22 @@ export default function ServicePage() {
               setTimeout(() => streamRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
             }}
           >
-            {running ? "Checking" : "Check this service now"}
+            {running ? t.service.checking : t.service.checkNow}
           </button>
           <label className="row" style={{ gap: 8 }}>
-            <span className="small muted">Check automatically</span>
+            <span className="small muted">{t.service.auto}</span>
             <select
               value={service.schedule}
               onChange={(e) => changeSchedule(e.target.value as Schedule)}
             >
-              <option value="daily">Every day</option>
-              <option value="weekly">Every week</option>
-              <option value="monthly">Every month</option>
-              <option value="off">Never</option>
+              <option value="daily">{t.service.schedule.daily}</option>
+              <option value="weekly">{t.service.schedule.weekly}</option>
+              <option value="monthly">{t.service.schedule.monthly}</option>
+              <option value="off">{t.service.schedule.off}</option>
             </select>
           </label>
           <span className="small muted">
-            {last ? `Last checked ${relativeTime(last.finishedAt)}` : "Never checked"}
+            {last ? `${t.service.lastChecked} ${relativeTime(last.finishedAt)}` : t.service.never}
           </span>
         </div>
       </section>
@@ -142,17 +142,16 @@ export default function ServicePage() {
 
       <div className="grid grid-2" style={{ marginBottom: 20 }}>
         <section className="card">
-          <h2 style={{ marginBottom: 4 }}>Why the score is what it is</h2>
+          <h2 style={{ marginBottom: 4 }}>{t.service.why}</h2>
           <p className="small muted" style={{ marginBottom: 14 }}>
-            Six weighted factors, each one read from a field you can check. No model is involved,
-            which is why the number can be argued with.
+            {t.service.whySub}
           </p>
           {cost.factors.map((f) => (
             <div key={f.key} style={{ marginBottom: 14 }}>
               <div className="spread" style={{ alignItems: "baseline", marginBottom: 5 }}>
                 <span style={{ fontWeight: 600, fontSize: "0.93rem" }}>{f.label}</span>
                 <span className="mono muted">
-                  {Math.round(f.value * 100)} · weight {Math.round(f.weight * 100)}%
+                  {Math.round(f.value * 100)} · {t.service.weight} {Math.round(f.weight * 100)}%
                 </span>
               </div>
               <div className={`meter ${f.value > 0.66 ? "trapped" : f.value > 0.33 ? "sticky" : ""}`}>
@@ -167,27 +166,26 @@ export default function ServicePage() {
 
         <section className="stack">
           <div className="card">
-            <h3 style={{ marginBottom: 10 }}>What you keep here</h3>
+            <h3 style={{ marginBottom: 10 }}>{t.service.keep}</h3>
             <p className="small" style={{ color: "var(--ink-soft)" }}>{service.holds}</p>
             <dl className="kv" style={{ marginTop: 12 }}>
-              <dt>Items held</dt>
+              <dt>{t.service.kv.items}</dt>
               <dd>{formatNumber(totalItems)}</dd>
-              <dt>Would not follow</dt>
+              <dt>{t.service.kv.stranded}</dt>
               <dd>{formatNumber(strandedItems)}</dd>
-              <dt>Export</dt>
+              <dt>{t.service.kv.export}</dt>
               <dd>{service.exportFormats.join(", ")}</dd>
-              <dt>Copy written to</dt>
+              <dt>{t.service.kv.copy}</dt>
               <dd className="mono">{service.destination}</dd>
-              <dt>After cancellation</dt>
+              <dt>{t.service.kv.after}</dt>
               <dd>{service.deletion.note}</dd>
             </dl>
           </div>
 
           <div className="card">
-            <h3 style={{ marginBottom: 6 }}>What this has cost over time</h3>
+            <h3 style={{ marginBottom: 6 }}>{t.service.costOverTime}</h3>
             <p className="small muted" style={{ marginBottom: 10 }}>
-              A price that moves is the most common reason people find out too late that leaving is
-              expensive.
+              {t.service.costSub}
             </p>
             <Sparkline points={service.priceHistory} />
           </div>
@@ -195,31 +193,30 @@ export default function ServicePage() {
       </div>
 
       <section className="card" style={{ marginBottom: 20 }}>
-        <h2 style={{ marginBottom: 4 }}>Item by item</h2>
+        <h2 style={{ marginBottom: 4 }}>{t.service.itemByItem}</h2>
         <p className="small muted" style={{ marginBottom: 14 }}>
-          The platform is asked how much of each thing you hold. The copy is asked the same
-          question. This table is the difference.
+          {t.service.itemSub}
         </p>
         <table>
           <thead>
             <tr>
-              <th>Item type</th>
-              <th className="num">You hold</th>
-              <th>In the copy</th>
-              <th>What happens</th>
+              <th>{t.service.th.type}</th>
+              <th className="num">{t.service.th.hold}</th>
+              <th>{t.service.th.copy}</th>
+              <th>{t.service.th.what}</th>
             </tr>
           </thead>
           <tbody>
-            {service.itemTypes.map((t) => (
-              <tr key={t.key}>
-                <td style={{ fontWeight: 600 }}>{t.label}</td>
-                <td className="num">{formatNumber(t.count)}</td>
+            {service.itemTypes.map((it) => (
+              <tr key={it.key}>
+                <td style={{ fontWeight: 600 }}>{it.label}</td>
+                <td className="num">{formatNumber(it.count)}</td>
                 <td>
-                  <span className={`badge ${COVERAGE_BADGE[t.coverage].className}`}>
-                    {COVERAGE_BADGE[t.coverage].label}
+                  <span className={`badge ${COVERAGE_BADGE[it.coverage]}`}>
+                    {t.service.coverage[it.coverage]}
                   </span>
                 </td>
-                <td className="muted">{t.note}</td>
+                <td className="muted">{it.note}</td>
               </tr>
             ))}
           </tbody>
@@ -227,19 +224,19 @@ export default function ServicePage() {
       </section>
 
       <section className="card">
-        <h2 style={{ marginBottom: 14 }}>Every copy taken so far</h2>
+        <h2 style={{ marginBottom: 14 }}>{t.service.copies}</h2>
         {service.snapshots.length === 0 ? (
-          <p className="muted">No copy has been taken yet. Run a check to create the first one.</p>
+          <p className="muted">{t.service.copiesEmpty}</p>
         ) : (
           <table>
             <thead>
               <tr>
-                <th>Taken</th>
-                <th>Verdict</th>
-                <th className="num">Size</th>
-                <th className="num">Files</th>
-                <th className="num">Exit cost</th>
-                <th>What was observed</th>
+                <th>{t.service.th2.taken}</th>
+                <th>{t.service.th2.verdict}</th>
+                <th className="num">{t.service.th2.size}</th>
+                <th className="num">{t.service.th2.files}</th>
+                <th className="num">{t.service.th2.exit}</th>
+                <th>{t.service.th2.seen}</th>
               </tr>
             </thead>
             <tbody>

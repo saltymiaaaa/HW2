@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./logo";
-
-const LINKS = [
-  { href: "/", label: "Overview", note: "start here" },
-  { href: "/portfolio", label: "Portfolio", note: "demo data" },
-  { href: "/verify", label: "Check an export", note: "real" },
-  { href: "/report", label: "Exit report", note: "printable" },
-  { href: "/how-it-works", label: "How it works", note: "" },
-];
+import { useI18n, LanguageSwitcher } from "./i18n";
 
 export default function Nav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const links = [
+    { href: "/", label: t.nav.overview, note: t.nav.notes.overview },
+    { href: "/portfolio", label: t.nav.portfolio, note: t.nav.notes.portfolio },
+    { href: "/verify", label: t.nav.verify, note: t.nav.notes.verify },
+    { href: "/report", label: t.nav.report, note: t.nav.notes.report },
+    { href: "/how-it-works", label: t.nav.how, note: t.nav.notes.how },
+  ];
 
   return (
     <aside className="sidebar">
@@ -22,12 +24,12 @@ export default function Nav() {
         <span>
           <span className="brand-name">Exit Check</span>
           <br />
-          <span className="brand-sub">Know the cost of leaving</span>
+          <span className="brand-sub">{t.nav.tagline}</span>
         </span>
       </Link>
 
       <nav className="nav">
-        {LINKS.map((link) => {
+        {links.map((link) => {
           const active =
             link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
           return (
@@ -44,13 +46,10 @@ export default function Nav() {
       </nav>
 
       <div className="sidebar-foot">
-        <p style={{ margin: 0 }}>
-          Prototype. The portfolio is demo data. The export checker is real: it reads the archive
-          in your browser and nothing is uploaded.
-        </p>
-        <p style={{ margin: "8px 0 0" }}>
+        <LanguageSwitcher />
+        <p style={{ margin: "10px 0 0" }}>
           <Link href="/#how-to-use" style={{ color: "var(--exit)" }}>
-            New here? Start with the three steps.
+            {t.nav.startLink}
           </Link>
         </p>
       </div>

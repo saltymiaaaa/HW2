@@ -1,327 +1,263 @@
+"use client";
+
 import Link from "next/link";
-import Logo from "@/components/logo";
 import ScoreRing from "@/components/score-ring";
+import { useI18n } from "@/components/i18n";
 
-export const metadata = {
-  title: "Exit Check",
-  description:
-    "Know what leaving a service would cost, before the day you have to leave. Exit Check keeps a verified copy of your data outside every platform you depend on.",
-};
+/* Demo scores, matching the latest runs in lib/seed.ts. */
+const PLATFORMS = [
+  { name: "Notion", score: 62, band: "trapped" },
+  { name: "Evernote", score: 51, band: "sticky" },
+  { name: "Slack", score: 51, band: "sticky" },
+  { name: "Figma", score: 44, band: "sticky" },
+  { name: "Google Photos", score: 29, band: "portable" },
+  { name: "GitHub", score: 25, band: "portable" },
+] as const;
 
-/**
- * The landing page. It has one job: somebody who has never seen this should
- * understand what it is, what it produces and where to click, without reading
- * any documentation.
- */
+function bandColor(band: string) {
+  return `var(--${band})`;
+}
+
+/* Minimal inline icons, one per pain point. */
+const PainIcons = [
+  // clock-once: a clock with a single tick
+  <svg key="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+  </svg>,
+  // unopened box
+  <svg key="2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 8v8a2 2 0 0 1-1 1.7l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8" /><path d="M3.3 7l8 4.6a2 2 0 0 0 1.4 0L21 7" /><path d="M12 22V12" />
+  </svg>,
+  // data leaking out of a jar
+  <svg key="3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 5 5 19" /><circle cx="6.5" cy="6.5" r="2.5" /><circle cx="6.5" cy="17.5" r="2.5" /><circle cx="17.5" cy="6.5" r="2.5" />
+  </svg>,
+];
+
+/* Icons for the four flow steps. */
+const FlowIcons = [
+  <svg key="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+  </svg>,
+  <svg key="2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z" /><path d="M3.3 7l8.7 5 8.7-5" /><path d="M12 22V12" />
+  </svg>,
+  <svg key="3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 13c0 5-3.5 7.5-7.7 9a.6.6 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.6 3.8 17 5 19 5a1 1 0 0 1 1 1Z" /><path d="m9 12 2 2 4-4" />
+  </svg>,
+  <svg key="4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /><path d="M8 13h8M8 17h5" />
+  </svg>,
+];
+
 export default function Landing() {
+  const { t } = useI18n();
+
   return (
     <div className="landing">
+      {/* --- introduction: what this is and what problem it solves --- */}
+      <section className="intro-band">
+        <p className="eyebrow">{t.intro.eyebrow}</p>
+        <p className="intro-what">{t.intro.what}</p>
+        <div className="grid grid-3">
+          {t.intro.cards.map((c) => (
+            <div className="card intro-card" key={c.k}>
+              <h3>{c.k}</h3>
+              <p>{c.v}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="hero">
-       <div className="hero-copy">
-        <div className="hero-mark">
-          <Logo size={40} />
-          <span className="brand-sub">Know the cost of leaving</span>
+        <div className="hero-copy">
+          <span className="hero-pill">
+            <span className="pulse-dot" /> {t.hero.pill}
+          </span>
+
+          <h1>
+            {t.hero.h1a}
+            <em>{t.hero.h1b}</em>
+          </h1>
+
+          <p className="lede">{t.hero.lede}</p>
+
+          <div className="stat-strip">
+            <div className="stat">
+              <span className="stat-value">6</span>
+              <span className="stat-label">{t.hero.s1}</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value">0–100</span>
+              <span className="stat-label">{t.hero.s2}</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value">0</span>
+              <span className="stat-label">{t.hero.s3}</span>
+            </div>
+          </div>
+
+          <div className="row" style={{ marginTop: 26 }}>
+            <Link className="button button-primary" href="/portfolio">
+              {t.hero.cta}
+            </Link>
+            <Link className="button" href="/verify">
+              {t.hero.cta2}
+            </Link>
+          </div>
         </div>
-
-        <h1>
-          You find out what leaving a service costs on the <em>worst possible day</em>.
-        </h1>
-
-        <p className="lede" style={{ maxWidth: "62ch", fontSize: "1.12rem" }}>
-          The day the price changes, the free tier shrinks, or the company is acquired. Exit Check
-          answers the question in advance. It keeps a copy of your data outside every platform you
-          depend on, opens that copy to prove it is readable, and reports what did not come out.
-        </p>
-
-        <div className="specimen">
-          <p className="eyebrow" style={{ marginBottom: 10 }}>The entire output of the product</p>
-          <p className="verdict-sentence is-sticky" style={{ fontSize: "1.35rem" }}>
-            Leaving Notion today would take about 34 hours and no direct spend, and you would leave
-            behind databases, database relations, comments, sharing and permissions and page
-            history.
-          </p>
-        </div>
-
-        <div className="row" style={{ marginTop: 26, gap: 10 }}>
-          <Link className="button button-primary" href="/portfolio">
-            Open the demo portfolio
-          </Link>
-          <Link className="button" href="/verify">
-            Check a real export
-          </Link>
-          <Link className="button" href="#how-to-use" style={{ border: "none" }}>
-            How do I use this?
-          </Link>
-        </div>
-       </div>
 
         <aside className="hero-panel">
-          <p className="eyebrow" style={{ marginBottom: 12 }}>A card from the portfolio</p>
           <div className="card">
             <div className="spread">
               <div>
                 <h3 style={{ marginBottom: 2 }}>Notion</h3>
-                <p className="small muted" style={{ margin: 0 }}>Documents and databases</p>
+                <span className="badge trapped">{t.chart.verdict}</span>
               </div>
               <ScoreRing score={64} band="trapped" size={64} />
             </div>
-
-            <div className="row" style={{ marginTop: 14, marginBottom: 14 }}>
-              <span className="badge trapped">Trapped</span>
-              <span className="badge sticky">Lossy</span>
+            <div className="chip-row" style={{ marginTop: 14 }}>
+              <span className="mini-chip">⏱ {t.chart.hours}</span>
+              <span className="mini-chip is-bad">⚠ {t.chart.behind}</span>
             </div>
-
-            <dl className="kv" style={{ rowGap: 10 }}>
-              <dt>Comments</dt>
-              <dd>
-                <span className="badge trapped">Stays behind</span>
-              </dd>
-              <dt>Page history</dt>
-              <dd>
-                <span className="badge trapped">Stays behind</span>
-              </dd>
-              <dt>Databases</dt>
-              <dd>
-                <span className="badge sticky">Comes out reduced</span>
-              </dd>
-              <dt>Pages</dt>
-              <dd>
-                <span className="badge portable">Comes out in full</span>
-              </dd>
-            </dl>
           </div>
-
-          <p className="small muted" style={{ marginTop: 10 }}>
-            Four of the seven item types in a Notion workspace do not survive its own export. That is
-            the difference between having a copy and being able to leave.
-          </p>
         </aside>
       </section>
 
+      {/* --- bar chart: the whole portfolio at a glance --- */}
       <section className="band">
-        <h2 style={{ marginBottom: 6 }}>The problem is not backup</h2>
+        <p className="eyebrow">Portfolio</p>
+        <h2 style={{ marginBottom: 4 }}>{t.chart.title}</h2>
         <p className="lede" style={{ marginTop: 0, marginBottom: 20 }}>
-          Most people already hold a copy of something. What they do not hold is an answer. Three
-          things go wrong quietly, and they fail in different ways.
+          {t.chart.sub}
         </p>
 
-        <div className="grid grid-3">
-          <article className="card">
-            <p className="num-mark">01</p>
-            <h3>The export runs once</h3>
-            <p className="small" style={{ color: "var(--ink-soft)", marginBottom: 0 }}>
-              Then never again, so the copy slowly describes a version of your work that no longer
-              exists. Nobody remembers to repeat a task that has no deadline.
-            </p>
-          </article>
-          <article className="card">
-            <p className="num-mark">02</p>
-            <h3>Nobody opens it</h3>
-            <p className="small" style={{ color: "var(--ink-soft)", marginBottom: 0 }}>
-              A truncated archive and a complete one look identical in a folder. You discover the
-              difference on the day you try to use it, which is the worst day to discover it.
-            </p>
-          </article>
-          <article className="card">
-            <p className="num-mark">03</p>
-            <h3>The export leaves things out</h3>
-            <p className="small" style={{ color: "var(--ink-soft)", marginBottom: 0 }}>
-              By design. Comments, version history, permissions and the relationships between
-              records are usually in no export format at all, and nothing tells you.
-            </p>
-          </article>
+        <div className="card chart">
+          {PLATFORMS.map((p) => (
+            <Link href="/portfolio" key={p.name} className="chart-row">
+              <span className="chart-name">{p.name}</span>
+              <span className="chart-bar">
+                <span style={{ width: `${p.score}%`, background: bandColor(p.band) }} />
+              </span>
+              <span className="chart-val">{p.score}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
+      {/* --- pain points: icon cards, one line each --- */}
       <section className="band">
-        <h2 style={{ marginBottom: 6 }}>Four steps, and the third one is the product</h2>
-        <p className="lede" style={{ marginTop: 0, marginBottom: 22 }}>
-          Most tools in this area stop after step two.
+        <p className="eyebrow">Sound familiar?</p>
+        <h2 style={{ marginBottom: 4 }}>{t.pains.title}</h2>
+        <p className="lede" style={{ marginTop: 0, marginBottom: 20 }}>
+          {t.pains.sub}
         </p>
 
-        <ol className="steps">
-          <li>
-            <h3>Run the platform&rsquo;s own export, on a schedule</h3>
-            <p>
-              No new way out is invented. The export the platform already publishes is run every
-              day, week or month, so the copy does not depend on anyone remembering.
-            </p>
-          </li>
-          <li>
-            <h3>Write the copy where you control it</h3>
-            <p>
-              Your disk, your storage. Exit Check never holds the only copy of anything, because
-              replacing one dependency with another is not an exit.
-            </p>
-          </li>
-          <li className="is-key">
-            <h3>Open it, and say what is missing</h3>
-            <p>
-              Every structured file is parsed rather than counted. Images are checked against their
-              real bytes. Then the copy is compared with the platform, one item type at a time.
-            </p>
-          </li>
-          <li>
-            <h3>Answer one question, in one sentence</h3>
-            <p>How many hours, how much money, and exactly what would be left behind.</p>
-          </li>
-        </ol>
+        <div className="grid grid-3">
+          {t.pains.items.map((item, i) => (
+            <article className="card icon-card" key={item.t}>
+              <span className="icon-circle">{PainIcons[i]}</span>
+              <h3>{item.t}</h3>
+              <p className="small" style={{ color: "var(--ink-soft)", margin: 0 }}>
+                {item.d}
+              </p>
+            </article>
+          ))}
+        </div>
       </section>
 
+      {/* --- 0-100 scale --- */}
+      <section className="band">
+        <h2 style={{ marginBottom: 20 }}>{t.scale.title}</h2>
+        <div className="card scale-card">
+          <div className="scale-bar">
+            <span className="seg seg-portable" />
+            <span className="seg seg-sticky" />
+            <span className="seg seg-trapped" />
+          </div>
+          <div className="scale-marks">
+            <div className="mark">
+              <span className="badge portable">{t.scale.portable}</span>
+              <span className="small muted">{t.scale.p1}</span>
+            </div>
+            <div className="mark">
+              <span className="badge sticky">{t.scale.sticky}</span>
+              <span className="small muted">{t.scale.p2}</span>
+            </div>
+            <div className="mark">
+              <span className="badge trapped">{t.scale.trapped}</span>
+              <span className="small muted">{t.scale.p3}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- how it works: icon flow --- */}
+      <section className="band">
+        <p className="eyebrow">How it works</p>
+        <h2 style={{ marginBottom: 4 }}>{t.flow.title}</h2>
+        <p className="lede" style={{ marginTop: 0, marginBottom: 22 }}>
+          {t.flow.sub}
+        </p>
+
+        <div className="flow">
+          {t.flow.steps.map((s, i) => (
+            <div className={`flow-step${i === 2 ? " is-key" : ""}`} key={s.t}>
+              <span className="icon-circle">{FlowIcons[i]}</span>
+              <h3>{s.t}</h3>
+              <p>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- three-minute tour --- */}
       <section className="band" id="how-to-use">
         <p className="eyebrow">Start here</p>
-        <h2 style={{ marginBottom: 6 }}>How to use this in three minutes</h2>
-        <p className="lede" style={{ marginTop: 0, marginBottom: 22 }}>
-          Nothing needs to be installed, connected or signed into. Do these in order.
-        </p>
+        <h2 style={{ marginBottom: 20 }}>{t.howto.title}</h2>
 
         <div className="grid grid-3">
           <article className="card howto">
             <p className="num-mark">1</p>
-            <h3>Look at a portfolio</h3>
-            <p className="small">
-              Six platforms, each with a score from 0 to 100 and a sentence saying what leaving
-              would cost. Green means you could walk out this week. Red means some of it is never
-              coming back.
-            </p>
-            <Link className="button" href="/portfolio">
-              Open the portfolio
-            </Link>
+            <h3>{t.howto.items[0].t}</h3>
+            <Link className="button" href="/portfolio">{t.howto.items[0].cta}</Link>
           </article>
-
           <article className="card howto">
             <p className="num-mark">2</p>
-            <h3>Open one, and run a check</h3>
-            <p className="small">
-              Press <strong>Check this service now</strong>. The run streams live, step by step, and
-              finishes by naming what the export leaves behind. Every factor in the score shows the
-              evidence it came from.
-            </p>
-            <Link className="button" href="/services/notion">
-              Open Notion
-            </Link>
+            <h3>{t.howto.items[1].t}</h3>
+            <Link className="button" href="/services/notion">{t.howto.items[1].cta}</Link>
           </article>
-
           <article className="card howto">
             <p className="num-mark">3</p>
-            <h3>Check a real archive</h3>
-            <p className="small">
-              This part is not a demo. Press <strong>Try it with a sample export</strong>, or drop in
-              a genuine export you already have. The archive is opened in your browser and never
-              uploaded.
-            </p>
-            <Link className="button button-primary" href="/verify">
-              Check an export
-            </Link>
+            <h3>{t.howto.items[2].t}</h3>
+            <Link className="button button-primary" href="/verify">{t.howto.items[2].cta}</Link>
           </article>
         </div>
-
-        <p className="note" style={{ marginTop: 18 }}>
-          The portfolio is demo data, and it is labelled as such everywhere it appears. The export
-          checker is real code doing real work on a real file. If you only have time for one thing,
-          make it step three.
-        </p>
       </section>
 
+      {/* --- FAQ, one-line answers --- */}
       <section className="band">
-        <h2 style={{ marginBottom: 6 }}>What the score means</h2>
-        <p className="lede" style={{ marginTop: 0, marginBottom: 20 }}>
-          Exit cost runs from 0 to 100. Zero means you could leave today. One hundred means the data
-          is effectively hostage.
-        </p>
-
-        <div className="grid grid-3">
-          <article className="card">
-            <span className="badge portable">Portable, under 30</span>
-            <p className="small" style={{ marginTop: 12, marginBottom: 0, color: "var(--ink-soft)" }}>
-              The export is complete, it opens in other tools, and being operational elsewhere is a
-              short job. GitHub scores 26.
-            </p>
-          </article>
-          <article className="card">
-            <span className="badge sticky">Sticky, 30 to 54</span>
-            <p className="small" style={{ marginTop: 12, marginBottom: 0, color: "var(--ink-soft)" }}>
-              You can leave, and it will cost you real days, or land you in a format only one
-              company opens. Figma scores 46.
-            </p>
-          </article>
-          <article className="card">
-            <span className="badge trapped">Trapped, 55 and above</span>
-            <p className="small" style={{ marginTop: 12, marginBottom: 0, color: "var(--ink-soft)" }}>
-              Something important does not come out at all. Notion scores 64, and Slack is counted
-              as trapped at 53 by a rule that overrides the arithmetic.
-            </p>
-          </article>
-        </div>
-
-        <p className="small muted" style={{ marginTop: 16, maxWidth: "80ch" }}>
-          Six weighted factors, each read from a field you can inspect, and no model anywhere. One
-          rule beats the arithmetic: if more than a quarter of what you hold cannot be exported at
-          all, the service is trapped whatever the score says, because moving quickly does not help
-          with data that never comes out.
-        </p>
-      </section>
-
-      <section className="band">
-        <h2 style={{ marginBottom: 14 }}>Questions people ask first</h2>
+        <h2 style={{ marginBottom: 14 }}>{t.faq.title}</h2>
         <div className="faq">
-          <details>
-            <summary>Is this a backup tool?</summary>
-            <p>
-              No. A backup tool gets you a copy. This tells you whether the copy is worth anything
-              and what it would still cost you to leave. The verification and the number are the
-              product; the copy is the means.
-            </p>
-          </details>
-          <details>
-            <summary>Does my data get uploaded anywhere?</summary>
-            <p>
-              No. On the Check an export page the archive is opened inside your browser. Only the
-              manifest, which is file names, sizes and parse results, is sent to the server so it
-              can be scored. In the full product the copy is written to storage you already control,
-              and Exit Check never holds the only copy of anything.
-            </p>
-          </details>
-          <details>
-            <summary>Is any of this AI?</summary>
-            <p>
-              No, and that is deliberate. The exit cost is arithmetic over fields you can read, and
-              the archive checker is parsers. The whole claim is that a number can be trusted, so
-              the number has to be one you can take apart and disagree with.
-            </p>
-          </details>
-          <details>
-            <summary>What is real in this prototype?</summary>
-            <p>
-              The archive checker, the scoring, the scheduled runs and the live event stream are
-              real. The platform connectors that would perform the transfer are simulated, and the
-              portfolio is demo data built from each platform&rsquo;s published export behaviour.
-              The <Link href="/how-it-works">How it works</Link> page has the full table.
-            </p>
-          </details>
-          <details>
-            <summary>Who is it for?</summary>
-            <p>
-              Individuals and small teams holding years of work inside subscription tools. Not
-              enterprises, who have procurement, retention obligations and their own exit clauses.
-              The value here is for people whose leverage over a platform is zero.
-            </p>
-          </details>
+          {t.faq.items.map((f) => (
+            <details key={f.q}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
         </div>
       </section>
 
       <section className="band closing">
-        <h2 style={{ fontSize: "clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem)", maxWidth: "26ch" }}>
-          Every service you rely on is trusted with something irreplaceable, and not one of them
-          publishes what leaving would cost.
+        <h2 style={{ fontSize: "clamp(1.6rem, 1.2rem + 1.8vw, 2.3rem)", marginBottom: 10 }}>
+          {t.closing.h}
         </h2>
-        <div className="row" style={{ marginTop: 22 }}>
-          <Link className="button button-primary" href="/verify">
-            Check an export now
-          </Link>
-          <Link className="button" href="/portfolio">
-            See the demo portfolio
-          </Link>
+        <p className="lede" style={{ marginTop: 0, marginBottom: 24 }}>
+          {t.closing.sub}
+        </p>
+        <div className="row">
+          <Link className="button" href="/verify">{t.closing.cta}</Link>
+          <Link className="button" href="/portfolio">{t.closing.cta2}</Link>
         </div>
       </section>
     </div>

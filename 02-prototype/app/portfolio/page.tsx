@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ScoreRing from "@/components/score-ring";
+import { useI18n } from "@/components/i18n";
 import { VERDICT_SHORT, formatNumber, relativeTime, scheduleLabel } from "@/lib/format";
-import { bandLabel } from "@/lib/score";
 import type { ExitCost, Service } from "@/lib/types";
 
 type Row = { service: Service; cost: ExitCost };
@@ -24,6 +24,7 @@ type Report = {
 };
 
 export default function Dashboard() {
+  const { t } = useI18n();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [report, setReport] = useState<Report | null>(null);
 
@@ -42,24 +43,17 @@ export default function Dashboard() {
     <>
       <header className="page-head">
         <div className="row" style={{ marginBottom: 8 }}>
-          <p className="eyebrow" style={{ margin: 0 }}>Portfolio</p>
-          <span className="demo-flag">Demo data</span>
+          <p className="eyebrow" style={{ margin: 0 }}>{t.nav.portfolio}</p>
+          <span className="demo-flag">{t.portfolio.flag}</span>
         </div>
-        <h1>What it would cost you to leave</h1>
-        <p className="lede">
-          Every service below holds something you would have to get back. Exit Check keeps a copy
-          outside each one, opens that copy to check it is readable, and reports what did not come
-          out.
-        </p>
+        <h1>{t.portfolio.h1}</h1>
+        <p className="lede">{t.portfolio.lede}</p>
       </header>
 
       <div className="intro">
         <div>
-          <strong>What you are looking at.</strong> Six platforms, each with an exit cost from 0 to
-          100. Green means you could leave this week, amber means it would cost you real days, red
-          means something important does not come out at all. Open any card to see the six factors
-          behind its score, the item by item inventory, and a check you can run live.{" "}
-          <Link href="/#how-to-use">The three step walkthrough</Link> explains the rest.
+          <strong>{t.portfolio.intro}</strong>
+          {t.portfolio.introBody}
         </div>
       </div>
 
@@ -69,36 +63,36 @@ export default function Dashboard() {
           <div className="grid grid-3" style={{ marginTop: 20 }}>
             <div className="stat">
               <span className="stat-value">{formatNumber(report.summary.hours)} h</span>
-              <span className="stat-label">to be running elsewhere</span>
+              <span className="stat-label">{t.portfolio.st1}</span>
             </div>
             <div className="stat">
               <span className="stat-value">{formatNumber(report.summary.strandedItems)}</span>
               <span className="stat-label">
-                items that would not come with you, of {formatNumber(report.summary.totalItems)}
+                {t.portfolio.st2} / {formatNumber(report.summary.totalItems)}
               </span>
             </div>
             <div className="stat">
               <span className="stat-value">${report.summary.monthly.toFixed(2)}</span>
-              <span className="stat-label">paid every month to keep this arrangement</span>
+              <span className="stat-label">{t.portfolio.st3}</span>
             </div>
           </div>
           {report.summary.unverified.length > 0 ? (
             <p className="note" style={{ marginTop: 16, marginBottom: 0 }}>
-              Never checked: {report.summary.unverified.join(", ")}. A service with no verified copy
-              is scored on what the vendor documents, not on what was observed.
+              {t.portfolio.unverified}: {report.summary.unverified.join(", ")}.
+              {t.portfolio.unverifiedBody}
             </p>
           ) : null}
         </section>
       ) : (
         <section className="card" style={{ marginBottom: 22 }}>
-          <p className="muted" style={{ margin: 0 }}>Reading the portfolio.</p>
+          <p className="muted" style={{ margin: 0 }}>{t.portfolio.loading}</p>
         </section>
       )}
 
       <div className="spread" style={{ marginBottom: 12 }}>
-        <h2>Services</h2>
+        <h2>{t.portfolio.services}</h2>
         <Link className="button" href="/report">
-          Open the full report
+          {t.portfolio.openReport}
         </Link>
       </div>
 
@@ -126,12 +120,12 @@ export default function Dashboard() {
               </div>
 
               <div className="row card-tail" style={{ marginTop: 14 }}>
-                <span className={`badge ${cost.band}`}>{bandLabel(cost.band)}</span>
+                <span className={`badge ${cost.band}`}>{t.bands[cost.band]}</span>
                 <span className={`badge ${last ? (last.verdict === "readable" ? "portable" : "sticky") : "neutral"}`}>
-                  {last ? VERDICT_SHORT[last.verdict] : "Unchecked"}
+                  {last ? VERDICT_SHORT[last.verdict] : t.portfolio.unchecked}
                 </span>
                 <span className="small muted">
-                  {last ? `Checked ${relativeTime(last.finishedAt)}` : "Never checked"} ·{" "}
+                  {last ? `${t.portfolio.checked} ${relativeTime(last.finishedAt)}` : t.portfolio.never} ·{" "}
                   {scheduleLabel(service.schedule)}
                 </span>
               </div>
@@ -150,7 +144,7 @@ export default function Dashboard() {
 
       {report && report.events.length > 0 ? (
         <section style={{ marginTop: 34 }}>
-          <h2 style={{ marginBottom: 12 }}>Recent activity</h2>
+          <h2 style={{ marginBottom: 12 }}>{t.portfolio.recent}</h2>
           <div className="card">
             {report.events.slice(0, 8).map((e, i) => (
               <div className="finding" key={i}>

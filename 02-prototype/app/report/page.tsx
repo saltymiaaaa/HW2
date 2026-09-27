@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import ScoreRing from "@/components/score-ring";
+import { useI18n } from "@/components/i18n";
 import { VERDICT_SHORT, formatDate, formatNumber } from "@/lib/format";
-import { bandLabel } from "@/lib/score";
 import type { ExitCost, Factor, Verdict } from "@/lib/types";
 
 type ReportService = {
@@ -41,6 +41,7 @@ type Report = {
 };
 
 export default function ReportPage() {
+  const { t } = useI18n();
   const [report, setReport] = useState<Report | null>(null);
 
   useEffect(() => {
@@ -49,32 +50,28 @@ export default function ReportPage() {
       .then(setReport);
   }, []);
 
-  if (!report) return <p className="muted">Building the report.</p>;
+  if (!report) return <p className="muted">{t.report.loading}</p>;
 
   const { summary } = report;
 
   return (
     <>
       <div className="spread" style={{ marginBottom: 6 }}>
-        <p className="eyebrow">Exit report · {formatDate(report.generatedAt)}</p>
+        <p className="eyebrow">{t.nav.report} · {formatDate(report.generatedAt)}</p>
         <button className="no-print" onClick={() => window.print()}>
-          Print or save as PDF
+          {t.report.print}
         </button>
       </div>
 
       <header className="page-head">
-        <h1>If you had to leave everything tomorrow</h1>
-        <p className="lede">
-          One page, covering every platform being watched. It is written to be read on the day
-          somebody changes a price, which is the only day anyone asks this question.
-        </p>
+        <h1>{t.report.h1}</h1>
+        <p className="lede">{t.report.lede}</p>
       </header>
 
       <div className="intro no-print">
         <div>
-          <strong>What you are looking at.</strong> Every platform being watched, worst first, on
-          one page. This is the view meant to be printed or saved as a PDF and sent to somebody on
-          the day a price changes. Use the button above.
+          <strong>{t.report.introStrong}</strong>
+          {t.report.introBody}
         </div>
       </div>
 
@@ -84,36 +81,36 @@ export default function ReportPage() {
         <div className="grid grid-3" style={{ marginTop: 22 }}>
           <div className="stat">
             <span className="stat-value">{formatNumber(summary.hours)} h</span>
-            <span className="stat-label">of work to be running elsewhere</span>
+            <span className="stat-label">{t.report.st1}</span>
           </div>
           <div className="stat">
             <span className="stat-value">${formatNumber(summary.usd)}</span>
-            <span className="stat-label">of direct spend to replace what you pay for</span>
+            <span className="stat-label">{t.report.st2}</span>
           </div>
           <div className="stat">
             <span className="stat-value">{summary.averageScore}</span>
-            <span className="stat-label">average exit cost across {summary.count} services</span>
+            <span className="stat-label">{t.report.st3} {summary.count} {t.report.st3b}</span>
           </div>
         </div>
 
         {summary.worst ? (
           <p className="note" style={{ marginTop: 18, marginBottom: 0 }}>
-            <strong>{summary.worst.name}</strong> is the one to fix first. {summary.worst.sentence}
+            <strong>{summary.worst.name}</strong> {t.report.worstFirst} {summary.worst.sentence}
           </p>
         ) : null}
       </section>
 
       <section className="card" style={{ marginBottom: 20 }}>
-        <h2 style={{ marginBottom: 12 }}>Every service, worst first</h2>
+        <h2 style={{ marginBottom: 12 }}>{t.report.every}</h2>
         <table>
           <thead>
             <tr>
-              <th>Service</th>
-              <th className="num">Exit cost</th>
-              <th>Band</th>
-              <th className="num">Hours</th>
-              <th>Last copy</th>
-              <th>Left behind</th>
+              <th>{t.report.th.service}</th>
+              <th className="num">{t.report.th.exit}</th>
+              <th>{t.report.th.band}</th>
+              <th className="num">{t.report.th.hours}</th>
+              <th>{t.report.th.last}</th>
+              <th>{t.report.th.behind}</th>
             </tr>
           </thead>
           <tbody>
@@ -125,15 +122,15 @@ export default function ReportPage() {
                 </td>
                 <td className="num">{s.score}</td>
                 <td>
-                  <span className={`badge ${s.band}`}>{bandLabel(s.band)}</span>
+                  <span className={`badge ${s.band}`}>{t.bands[s.band]}</span>
                 </td>
                 <td className="num">{s.hours}</td>
                 <td className="small">
-                  {s.lastChecked ? formatDate(s.lastChecked) : "never"}
+                  {s.lastChecked ? formatDate(s.lastChecked) : t.report.never}
                   <div className="muted">{VERDICT_SHORT[s.verdict]}</div>
                 </td>
                 <td className="small muted">
-                  {s.lostTypes.length === 0 ? "nothing" : s.lostTypes.join(", ")}
+                  {s.lostTypes.length === 0 ? t.report.nothing : s.lostTypes.join(", ")}
                 </td>
               </tr>
             ))}
@@ -141,7 +138,7 @@ export default function ReportPage() {
         </table>
       </section>
 
-      <h2 style={{ marginBottom: 12 }}>The sentence for each one</h2>
+      <h2 style={{ marginBottom: 12 }}>{t.report.sentenceH2}</h2>
       <div className="stack">
         {report.services.map((s) => (
           <section className="card" key={s.id}>
@@ -172,12 +169,7 @@ export default function ReportPage() {
         ))}
       </div>
 
-      <p className="small muted" style={{ marginTop: 24 }}>
-        Exit cost is six weighted factors read from the service record: what the export leaves
-        behind, whether another tool can open it, the work required to obtain it, the cost of being
-        running elsewhere, how fast the price moves, and what happens after you stop paying. No
-        model produces this number, so it can be checked line by line.
-      </p>
+      <p className="small muted" style={{ marginTop: 24 }}>{t.report.footnote}</p>
     </>
   );
 }

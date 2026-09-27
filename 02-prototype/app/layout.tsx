@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Nav from "@/components/nav";
+import { LangProvider } from "@/components/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,10 +13,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <div className="shell">
-          <Nav />
-          <main className="main">{children}</main>
-        </div>
+        <LangProvider>
+          <div className="shell">
+            <Nav />
+            <main className="main">{children}</main>
+          </div>
+        </LangProvider>
       </body>
     </html>
   );
